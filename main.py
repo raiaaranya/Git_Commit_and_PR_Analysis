@@ -1,4 +1,5 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import requests
 import openai
@@ -7,6 +8,28 @@ from openai import OpenAIError
 import os
 from dotenv import load_dotenv
 from sse_starlette.sse import EventSourceResponse
+import time
+
+app = FastAPI()
+
+from fastapi.responses import HTMLResponse
+
+@app.get("/", response_class=HTMLResponse)
+def landing_page():
+    return """
+    <html>
+        <head><title>GitHub PR Summarizer</title></head>
+        <body>
+            <h1>🧠 GitHub PR Summarizer</h1>
+            <p>This FastAPI service summarizes pull requests using GPT-4.</p>
+            <ul>
+                <li><a href="/docs">Swagger UI</a></li>
+                <li><a href="/health">Health Check</a></li>
+            </ul>
+        </body>
+    </html>
+    """
+
 
 load_dotenv()
 
@@ -45,18 +68,20 @@ def fetch_pull_requests(repo, count):
     return response.json()
 
 
-def summarize_pr(title, body):
+def summarize_pr(title, body, max_retries=3, delay=2):
     prompt = f"Summarize this GitHub Pull Request:\nTitle: {title}\nBody: {body}\nSummary:"
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4",
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.5
-        )
-        return response.choices[0].message.content.strip()
-    except OpenAIError as e:
-        print("OpenAI error:", str(e))
-        return "Error generating summary"
+    for attempt in range(max_retries):
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.5
+            )
+            return response.choices[0].message.content.strip()
+        except OpenAIError as e:
+            print(f"OpenAI error (attempt {attempt+1}):", str(e))
+            time.sleep(delay)
+    return "Error: Unable to generate summary after multiple attempts."
 
 # --- ROUTE ---
 @app.post("/summarize")
@@ -75,7 +100,7 @@ def summarize_prs(request: PRRequest):
             "trace": traceback.format_exc()
         }
 
-app = FastAPI()
+
 
 @app.get("/health")
 def health_check():

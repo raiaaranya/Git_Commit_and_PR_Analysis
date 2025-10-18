@@ -29,6 +29,7 @@ cd pr-summarizer
 ### 2. Create .env file
 
 GITHUB_TOKEN=ghp_your_github_token_here
+
 OPENAI_API_KEY=sk-your_openai_key_here
 
 ### 3. Build and run with Docker
