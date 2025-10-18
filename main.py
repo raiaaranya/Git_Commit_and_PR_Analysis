@@ -85,7 +85,7 @@ def landing_page():
                 <li><a href="/health">Health Check</a></li>
             </ul>
             <footer>
-                Built by G P Raio • Powered by FastAPI + GPT-4 • <a href="https://github.com/gprai" target="_blank">GitHub</a>
+                Built by G P Rai • Powered by FastAPI + GPT-4 • <a href="https://github.com/raiaaranya" target="_blank">GitHub</a>
             </footer>
         </body>
     </html>
