@@ -13,6 +13,8 @@ import time
 app = FastAPI()
 
 
+from fastapi import Form
+
 @app.get("/", response_class=HTMLResponse)
 def landing_page():
     return """
@@ -21,6 +23,14 @@ def landing_page():
         <body>
             <h1>🧠 GitHub PR Summarizer</h1>
             <p>This FastAPI service summarizes pull requests using GPT-4.</p>
+            <form method="post" action="/" style="margin-top:20px;">
+                <label>Repo (e.g. microsoft/semantic-kernel):</label><br>
+                <input type="text" name="repo" required><br><br>
+                <label>Count:</label><br>
+                <input type="number" name="count" value="3" min="1"><br><br>
+                <button type="submit">Summarize PRs</button>
+            </form>
+            <br>
             <ul>
                 <li><a href="/docs">Swagger UI</a></li>
                 <li><a href="/health">Health Check</a></li>
@@ -28,6 +38,35 @@ def landing_page():
         </body>
     </html>
     """
+
+@app.post("/", response_class=HTMLResponse)
+def summarize_from_form(repo: str = Form(...), count: int = Form(...)):
+    try:
+        prs = fetch_pull_requests(repo, count)
+        summaries = [
+            f"<li><strong>{pr['title']}</strong>: {summarize_pr(pr.get('title', ''), pr.get('body', ''))}</li>"
+            for pr in prs
+        ]
+        return f"""
+        <html>
+            <head><title>PR Summaries</title></head>
+            <body>
+                <h1>🧠 Summarized PRs for {repo}</h1>
+                <ul>{''.join(summaries)}</ul>
+                <br><a href="/">🔙 Back</a>
+            </body>
+        </html>
+        """
+    except Exception as e:
+        return f"""
+        <html>
+            <body>
+                <h2>Error</h2>
+                <pre>{str(e)}</pre>
+                <br><a href="/">🔙 Back</a>
+            </body>
+        </html>
+        """
 
 
 load_dotenv()
