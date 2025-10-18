@@ -19,15 +19,15 @@ A FastAPI microservice that fetches recent pull requests from any public GitHub 
 - GitHub REST API
 - Python 3.10+
 
-## 🛠 Setup
-
 ### 1. Clone the repo
 
-```bash
+
 git clone https://github.com/your-username/pr-summarizer.git
 cd pr-summarizer
 
+
 ### 2. Create .env file
+
 GITHUB_TOKEN=ghp_your_github_token_here
 OPENAI_API_KEY=sk-your_openai_key_here
 
@@ -56,7 +56,9 @@ json
   },
   ...
 ]
-### GET /health
+
+GET /health
+
 Returns {"status": "ok"} if the app is running.
 
 Swagger UI
@@ -69,4 +71,12 @@ You can deploy this app to Render, Azure App Service, or any container platform.
 This project is licensed under the GPL-3.0 License.
 
 ## 🙋‍♂️ Author
+
 Built by G P Rai, a cloud engineer and DevOps specialist passionate about scalable AI solutions.
+
+
+
+
+
+
+
