@@ -19,40 +19,94 @@ from fastapi import Form
 def landing_page():
     return """
     <html>
-        <head><title>GitHub PR Summarizer</title></head>
+        <head>
+            <title>GitHub PR Summarizer</title>
+            <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1828/1828884.png">
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 40px;
+                    background-color: #f9f9f9;
+                    color: #333;
+                }
+                h1 {
+                    color: #2c3e50;
+                    display: inline;
+                }
+                form {
+                    background: #fff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    max-width: 500px;
+                }
+                input, button {
+                    width: 100%;
+                    padding: 10px;
+                    margin-top: 10px;
+                    border: 1px solid #ccc;
+                    border-radius: 4px;
+                }
+                button {
+                    background-color: #2c3e50;
+                    color: white;
+                    cursor: pointer;
+                }
+                button:hover {
+                    background-color: #34495e;
+                }
+                ul {
+                    margin-top: 20px;
+                }
+                a {
+                    color: #2980b9;
+                    text-decoration: none;
+                }
+                footer {
+                    margin-top: 40px;
+                    font-size: 0.9em;
+                    color: #888;
+                }
+            </style>
+        </head>
         <body>
+            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828884.png" alt="Logo" width="50" style="vertical-align: middle; margin-right: 10px;">
             <h1>🧠 GitHub PR Summarizer</h1>
             <p>This FastAPI service summarizes pull requests using GPT-4.</p>
-            <form method="post" action="/" style="margin-top:20px;">
-                <label>Repo (e.g. microsoft/semantic-kernel):</label><br>
-                <input type="text" name="repo" required><br><br>
-                <label>Count:</label><br>
-                <input type="number" name="count" value="3" min="1"><br><br>
+            <form method="post" action="/">
+                <label>Repo (e.g. microsoft/semantic-kernel):</label>
+                <input type="text" name="repo" required>
+                <label>Count:</label>
+                <input type="number" name="count" value="3" min="1">
                 <button type="submit">Summarize PRs</button>
             </form>
-            <br>
             <ul>
                 <li><a href="/docs">Swagger UI</a></li>
                 <li><a href="/health">Health Check</a></li>
             </ul>
+            <footer>
+                Built by G P Raio • Powered by FastAPI + GPT-4 • <a href="https://github.com/gprai" target="_blank">GitHub</a>
+            </footer>
         </body>
     </html>
     """
+
+
 
 @app.post("/", response_class=HTMLResponse)
 def summarize_from_form(repo: str = Form(...), count: int = Form(...)):
     try:
         prs = fetch_pull_requests(repo, count)
         summaries = [
-            f"<li><strong>{pr['title']}</strong>: {summarize_pr(pr.get('title', ''), pr.get('body', ''))}</li>"
+            f"<div style='margin-bottom:20px;'><strong>{pr['title']}</strong><br><p>{summarize_pr(pr.get('title', ''), pr.get('body', ''))}</p></div>"
             for pr in prs
         ]
         return f"""
         <html>
             <head><title>PR Summaries</title></head>
-            <body>
+            <body style='font-family:Arial; margin:40px;'>
                 <h1>🧠 Summarized PRs for {repo}</h1>
-                <ul>{''.join(summaries)}</ul>
+                {''.join(summaries)}
                 <br><a href="/">🔙 Back</a>
             </body>
         </html>
@@ -60,7 +114,7 @@ def summarize_from_form(repo: str = Form(...), count: int = Form(...)):
     except Exception as e:
         return f"""
         <html>
-            <body>
+            <body style='font-family:Arial; margin:40px;'>
                 <h2>Error</h2>
                 <pre>{str(e)}</pre>
                 <br><a href="/">🔙 Back</a>
