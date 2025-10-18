@@ -12,7 +12,6 @@ import time
 
 app = FastAPI()
 
-from fastapi.responses import HTMLResponse
 
 @app.get("/", response_class=HTMLResponse)
 def landing_page():
@@ -45,8 +44,6 @@ client = OpenAI(
     api_key=OPENAI_API_KEY,
     default_headers={"Authorization": f"Bearer {OPENAI_API_KEY}"}
 )
-
-app = FastAPI()
 
 # --- HEADERS ---
 gh_headers = {
