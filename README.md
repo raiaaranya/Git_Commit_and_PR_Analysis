@@ -1,6 +1,6 @@
 # 🧠 GitHub PR Summarizer
 
-A FastAPI microservice that fetches recent pull requests from any public GitHub repository and summarizes them using OpenAI's GPT-4. Built for demo, deployment, and interview readiness.
+A FastAPI microservice that fetches recent pull requests from any public GitHub repository and summarizes them using OpenAI's GPT-4.
 
 ## 🚀 Features
 
